@@ -63,8 +63,10 @@ class NeuralNetwork(torch.nn.Module):
         super(NeuralNetwork, self).__init__()
         self.l1 = torch.nn.Linear(input_feature_size, 35)
         self.l2 = torch.nn.Linear(35, output_feature_size)
+        # self.l3 = torch.nn.Softmax()
 
     def forward(self, x):
+        # return self.l3(self.l2(self.l1(x)))
         return self.l2(self.l1(x))
 
 
@@ -76,7 +78,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 epochs = 10
-batch_size = 42000
+batch_size = 4200
 batchs = int(len(data)/batch_size)
 
 dataloader = torch.utils.data.DataLoader(
@@ -97,3 +99,6 @@ for epoch in range(epochs):
         optimizer.zero_grad()
 
         print(f"\t Batch : {batch_n+1}/{batchs}\t Loss : {loss.data:.2f}")
+
+model_save_path = "model-data-loader.pth"
+torch.save(model.state_dict(), model_save_path)
