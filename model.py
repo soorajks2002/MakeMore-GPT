@@ -66,7 +66,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 # print(model(x_data).shape)
 
-epochs = 100
+epochs = 10
 
 for epoch in range(epochs):
     outputs = model(x_data)
@@ -75,4 +75,32 @@ for epoch in range(epochs):
     optimizer.step()
     optimizer.zero_grad()
 
-    print(f"Epoch : {epoch+1}/{epochs} \t Loss : {loss}")
+    print(f"Epoch : {epoch+1}/{epochs} \t Loss : {loss.data}")
+
+
+def format_input(vector):
+    start_vector = torch.tensor(vector)
+    start_vector = embedding_map[start_vector]
+    start_vector = start_vector.view(1, -1)
+    return start_vector
+
+
+with torch.no_grad():
+    x_input = [0, 0, 0]
+    start_vector = format_input(x_input)
+    output = []
+
+    while True:
+        y_output = model(start_vector)
+        y_output = y_output.argmax().item()
+
+        if y_output == 0:
+            break
+
+        output.append(itos[y_output])
+
+        x_input.append(y_output)
+        x_input = x_input[1:]
+        start_vector = format_input(x_input)
+
+    print(''.join(output))
