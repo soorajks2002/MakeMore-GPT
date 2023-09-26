@@ -7,12 +7,11 @@ class NeuralNetwork(torch.nn.Module):
     def __init__(self, input_feature_size, output_feature_size):
         super(NeuralNetwork, self).__init__()
         self.l1 = torch.nn.Linear(input_feature_size, 35)
-        self.l2 = torch.nn.Linear(35, output_feature_size)
-        # self.l3 = torch.nn.Softmax()
+        self.l2 = torch.nn.LeakyReLU()
+        self.l3 = torch.nn.Linear(35, output_feature_size)
 
     def forward(self, x):
-        # return self.l3(self.l2(self.l1(x)))
-        return self.l2(self.l1(x))
+        return self.l3(self.l2(self.l1(x)))
 
 
 model = NeuralNetwork(14, 27)
@@ -29,17 +28,12 @@ embedder = torch.randn((27, 7))
 for i in range(n_names):
     result = []
 
-    inp = [random.randint(0, 26)]
-    if inp[0]:
-        inp.append(random.randint(1, 26))
-        result.append(decoder[inp[0]])
-    else:
-        inp.append(random.randint(0, 26))
+    inp = [0, random.randint(0, 26)]
 
     if inp[1]:
         result.append(decoder[inp[1]])
 
-    while True:
+    for i in range(10):
         x = torch.tensor(inp)
         x = embedder[x]
         x = x.view(-1)

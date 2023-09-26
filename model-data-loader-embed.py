@@ -67,12 +67,11 @@ class NeuralNetwork(torch.nn.Module):
     def __init__(self, input_feature_size, output_feature_size):
         super(NeuralNetwork, self).__init__()
         self.l1 = torch.nn.Linear(input_feature_size, 35)
-        self.l2 = torch.nn.Linear(35, output_feature_size)
-        # self.l3 = torch.nn.Softmax()
+        self.l2 = torch.nn.LeakyReLU()
+        self.l3 = torch.nn.Linear(35, output_feature_size)
 
     def forward(self, x):
-        # return self.l3(self.l2(self.l1(x)))
-        return self.l2(self.l1(x))
+        return self.l3(self.l2(self.l1(x)))
 
 
 data = Data()
