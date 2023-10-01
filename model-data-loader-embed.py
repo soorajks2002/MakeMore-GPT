@@ -1,3 +1,4 @@
+import random
 import torch
 torch.manual_seed(123321)
 
@@ -81,7 +82,7 @@ model = NeuralNetwork(data.x_shape, data.y_shape)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-epochs = 10
+epochs = 100
 batch_size = 4200
 batchs = int(len(data)/batch_size)
 
@@ -90,19 +91,21 @@ dataloader = torch.utils.data.DataLoader(
 
 for epoch in range(epochs):
     print(f"Epoch : {epoch+1}/{epochs}")
-    for batch_n, batch_data in enumerate(dataloader):
-        x = batch_data[0]
-        y = batch_data[1]
 
-        yp = model(x)
-        loss = criterion(yp, y)
+    if random.randint(0, 1):
+        for batch_n, batch_data in enumerate(dataloader):
+            x = batch_data[0]
+            y = batch_data[1]
 
-        loss.backward()
+            yp = model(x)
+            loss = criterion(yp, y)
 
-        optimizer.step()
-        optimizer.zero_grad()
+            loss.backward()
 
-        print(f"\t Batch : {batch_n+1}/{batchs}\t Loss : {loss.data:.2f}")
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print(f"\t Batch : {batch_n+1}/{batchs}\t Loss : {loss.data:.2f}")
 
 model_save_path = "model-data-loader-embedding.pth"
 torch.save(model.state_dict(), model_save_path)

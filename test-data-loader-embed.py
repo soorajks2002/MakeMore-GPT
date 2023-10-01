@@ -1,6 +1,8 @@
 import torch
 import random
+
 torch.manual_seed(123321)
+g = torch.Generator().manual_seed(2147483647 + 10)
 
 
 class NeuralNetwork(torch.nn.Module):
@@ -22,24 +24,22 @@ model.load_state_dict(torch.load(model_path))
 decoder = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm',
            14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z', 0: '<>'}
 
-n_names = int(input("Enter number of names to be generated : "))
+# n_names = int(input("Enter number of names to be generated : "))
+n_names = 5
 embedder = torch.randn((27, 7))
 
 for i in range(n_names):
     result = []
+    inp = [0, 0]
 
-    inp = [0, random.randint(0, 26)]
-
-    if inp[1]:
-        result.append(decoder[inp[1]])
-
-    for i in range(10):
+    while True:
         x = torch.tensor(inp)
         x = embedder[x]
         x = x.view(-1)
 
         y = model(x)
-        y = y.argmax().item()
+        y = torch.nn.functional.softmax(y, dim=-1)
+        y = torch.multinomial(y, num_samples=1, generator=g).item()
 
         if y:
             result.append(decoder[y])
@@ -50,4 +50,4 @@ for i in range(n_names):
         else:
             break
 
-    print(f"{i+1}. {''.join(result)}")
+    print(f"{i+1}. {''.join(result[2:])}")
