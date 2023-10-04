@@ -1,50 +1,42 @@
 import torch
 
 names = open('names.txt', 'r').read().splitlines()
-text_data = []
 
 unique_chars = list(set(''.join(names)))
 
-stoi = {char: i+1 for i, char in enumerate(unique_chars)}
-itos = {i+1: char for i, char in enumerate(unique_chars)}
+ctoi = {c: i+1 for i, c in enumerate(unique_chars)}
+itoc = {i+1: c for i, c in enumerate(unique_chars)}
 
-stoi['<>'] = 0
-itos[0] = '<>'
+ctoi['.'] = 0
+itoc[0] = '.'
 
-context_window = 3
+
+context_length = 5
+X = []
+Y = []
 
 for name in names:
-    name = ['<>']*context_window + list(name) + ['<>']
-    text_data.append(name)
+    x = [0] * context_length
+    for char in (name+'.'):
+        X.append(x)
+        Y.append(ctoi[char])
+        x = x[1:] + [ctoi[char]]
 
-x_data = []
-y_data = []
+X = torch.tensor(X, dtype=torch.int32)
+Y = torch.tensor(Y, dtype=torch.int32)
 
-for name in text_data[:10]:
-    for x1, x2, x3, y in zip(name[:], name[1:], name[2:], name[3:]):
 
-        x1 = stoi[x1]
-        x2 = stoi[x2]
-        x3 = stoi[x3]
-        y = stoi[y]
+class NeuralNetwork(torch.nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
 
-        x = [x1, x2, x3]
-        x_data.append(x)
-        y_data.append(y)
+        self.embed = torch.nn.Embedding(27, 10)
 
-x_data = torch.tensor(x_data)
-y_data = torch.tensor(y_data)
-y_data = y_data.view(-1, 1)
+    def __call__(self, x):
+        return self.embed(x)
 
-print("Token X : ", x_data[0])
 
-n_classes = len(stoi)
+model = NeuralNetwork()
 
-x1_data = torch.nn.functional.one_hot(x_data, n_classes)
-y1_data = torch.nn.functional.one_hot(y_data, n_classes)
-
-print("One-hot Encoded X : ", x1_data[0])
-
-embedding_map = torch.randn(size=(27, 4))
-
-print("Embeded X : ", embedding_map[x_data[0]])
+embeddings = model(X)
+print(embeddings.shape)
