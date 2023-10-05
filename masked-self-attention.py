@@ -38,21 +38,20 @@ class NeuralNetwork(torch.nn.Module):
         
         # print(out.shape)
         
-        mask = torch.tril(torch.ones(out.size(0), out.size(0)))
+        mask = torch.tril(torch.ones(out.size(0), out.size(0)), diagonal=0)
+        mask = mask.masked_fill(mask == 0, float('-inf'))
         # print(mask.shape)
         # print(mask)
         
-        out,attention = self.attention(out, out, out, attn_mask=mask)
+        out,attent = self.attention(out, out, out, attn_mask=mask)
         
         out = out.permute(1,0,2)
-        return out, attention
+        return out, attent
 
 
 model = NeuralNetwork()
 
 out,attention = model(X[:1])
 
-out = torch.tensor(out)
-att = torch.tensor(attention)
 print(out.shape)
 print(attention.shape)
