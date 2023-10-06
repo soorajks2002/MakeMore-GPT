@@ -41,9 +41,8 @@ class dataset (torch.utils.data.Dataset):
         return (self.x[index], self.y[index])
 
 # Positional Encoding
-class PositionalEncoding(torch.nn.Module) :
+class PositionalEncoding() :
     def __init__(self, embedding_size) :
-        super(PositionalEncoding, self).__init__()
         self.division_term = [i-1 if i%2 else i for i in range(embedding_size)]
         self.division_term = 1/ torch.pow(1e4, torch.tensor(self.division_term)/embedding_size)
         self.division_term = self.division_term.view(1,embedding_size)
