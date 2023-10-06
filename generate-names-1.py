@@ -107,7 +107,7 @@ n_names_generate = 15
 
 decoder.eval()  # sets normalization and dropout layers to eval mode
 with torch.no_grad() : # stops gradient tracking 
-    for i in range(n_attention_heads): 
+    for i in range(n_names_generate): 
         context = [0]*context_length
         name = []
         while True :
